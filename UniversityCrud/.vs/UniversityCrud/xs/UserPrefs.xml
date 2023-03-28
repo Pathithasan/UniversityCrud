@@ -1,6 +1,27 @@
 ﻿<Properties StartupConfiguration="{8BC0AFD6-2910-4BA1-989C-D5581B1C869C}|Default">
-  <MonoDevelop.Ide.ItemProperties.UniversityCrud.Shared FirstBuild="True" />
-  <MonoDevelop.Ide.ItemProperties.UniversityCrud.Server FirstBuild="True" />
-  <MonoDevelop.Ide.ItemProperties.UniversityCrud.Client FirstBuild="True" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.ItemProperties.UniversityCrud.Server PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Shared/Model/Course.cs">
+    <Files>
+      <File FileName="Shared/Model/Course.cs" Line="7" Column="6" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="UniversityCrud" expanded="True">
+            <Node name="UniversityCrud.Server" expanded="True" />
+            <Node name="UniversityCrud.Shared" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MultiItemStartupConfigurations />
 </Properties>
