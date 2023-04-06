@@ -59,7 +59,7 @@ namespace UniversityCrud.Server.DAL.Repositories
         /// <returns>The student object if found, otherwise null</returns>
         public async Task<Student> GetById(int id)
         {
-            
+
             #pragma warning disable CS8603 // Possible null reference return.
             return await table
                         .Include(s => s.Course).AsNoTracking()

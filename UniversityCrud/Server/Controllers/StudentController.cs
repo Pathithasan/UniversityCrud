@@ -12,7 +12,7 @@ namespace UniversityCrud.Server.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class StudentController : ControllerBase
+    public class StudentController : Controller
     {
         private readonly IStudentRepository _studentRepository;
 
@@ -32,7 +32,7 @@ namespace UniversityCrud.Server.Controllers
         public async Task<ActionResult<Student>> GetStudentById(int id)
         {
             var student = await _studentRepository.GetById(id);
-                
+            //var student = await Task.FromResult(_studentRepository.FindByCondition(s => s.Id.Equals(id)).Result.FirstOrDefault());
             if (student == null)
             {
                 return NotFound("Sorry, no student here. :/");
@@ -48,7 +48,8 @@ namespace UniversityCrud.Server.Controllers
             {
                 student.Course = null;
                 student.Id = 0;
-
+                student.DateCreated = DateTime.Now;
+                student.DateUpdated = DateTime.Now;
                 await _studentRepository.Insert(student);
                 return Ok(await _studentRepository.GetAll());
             }
@@ -63,6 +64,7 @@ namespace UniversityCrud.Server.Controllers
         public async Task<ActionResult<List<Student>>> UpdateStudent(Student student, int id)
         {
             var dbStudent = await _studentRepository.GetById(id);
+            //var dbStudent = await Task.FromResult(_studentRepository.FindByCondition(s => s.Id.Equals(id)).Result.FirstOrDefault());
             if (dbStudent != null)
             {
                 dbStudent.FirstName = student.FirstName;

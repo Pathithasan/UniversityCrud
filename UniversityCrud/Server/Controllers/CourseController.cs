@@ -3,44 +3,115 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using UniversityCrud.Server.DAL.Repositories;
+using UniversityCrud.Shared.Model;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace UniversityCrud.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]/[action]")]
+    [ApiController]
     public class CourseController : Controller
     {
-        // GET: api/values
+        private readonly ICourseRepository _courseRepository;
+
+        public CourseController(ICourseRepository context)
+        {
+            _courseRepository = context;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<List<Course>>> GetAllCoursees()
         {
-            return new string[] { "value1", "value2" };
+            var coursees = await _courseRepository.GetAll();
+            return Ok(coursees);
         }
 
-        // GET api/values/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<Course>> GetCourseById(int id)
         {
-            return "value";
+            var course = await _courseRepository.GetById(id);
+
+            if (course == null)
+            {
+                return NotFound("Sorry, no course here. :/");
+            }
+            return Ok(course);
         }
 
-        // POST api/values
         [HttpPost]
-        public void Post([FromBody]string value)
+        public async Task<ActionResult<List<Course>>> CreateCourse(Course course)
         {
+            var dbCourses = await _courseRepository.FindByCondition(s => s.Title.Equals(course.Title));
+            if (dbCourses.Count() == 0)
+            {
+                course.Id = 0;
+                course.DateCreated = DateTime.Now;
+                course.DateUpdated = DateTime.Now;
+                await _courseRepository.Insert(course);
+                return Ok(await _courseRepository.GetAll());
+            }
+            else
+            {
+                return NotFound("Sorry, Given email is already existing. :/");
+            }
+
         }
 
-        // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public async Task<ActionResult<List<Course>>> UpdateCourse(Course course, int id)
         {
+            var dbCourse = await _courseRepository.GetById(id);
+            if (dbCourse != null)
+            {
+                dbCourse.Description = course.Description;
+                dbCourse.DateUpdated = DateTime.Now;
+
+                if (dbCourse.Title == course.Title)
+                {
+                    await _courseRepository.Update(course);
+
+                    return Ok(await _courseRepository.GetAll());
+                }
+                else
+                {
+                    var dbCourses = await _courseRepository.FindByCondition(s => s.Title.Equals(course.Title));
+                    if (dbCourses.Count() == 0)
+                    {
+                        dbCourse.Title = course.Title;
+
+                        await _courseRepository.Update(course);
+
+                        return Ok(await _courseRepository.GetAll());
+                    }
+                    else
+                    {
+                        return NotFound("Sorry, Given title is already existing. :/");
+                    }
+                }
+            }
+            else
+            {
+                return NotFound("Sorry, but no course for given ID. :/");
+            }
         }
 
-        // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<List<Course>>> DeleteCourse(int id)
         {
+            var dbCourse = await _courseRepository.GetById(id);
+
+            if (dbCourse == null)
+            {
+                return NotFound("Sorry, but no course for you. :/");
+            }
+            else
+            {
+                await _courseRepository.Delete(id);
+                return Ok(await _courseRepository.GetAll());
+
+            }
         }
     }
 }

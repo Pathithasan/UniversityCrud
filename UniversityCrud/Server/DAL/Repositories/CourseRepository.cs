@@ -59,7 +59,9 @@ namespace UniversityCrud.Server.DAL.Repositories
         public async Task<Course> GetById(int id)
         {
             #pragma warning disable CS8603 // Possible null reference return.
-            return await table.FindAsync(id);
+            return await table
+                         .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == id);
             #pragma warning restore CS8603 // Possible null reference return.
         }
 
