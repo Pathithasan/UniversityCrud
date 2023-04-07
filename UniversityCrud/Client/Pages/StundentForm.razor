@@ -1,0 +1,133 @@
+﻿@page "/studentform"
+@page "/studentform/{id:int}"
+@inject IStudentService StudentService
+@inject ICourseService CourseService
+
+@if (Id == null)
+{
+    <PageTitle>Create a new Studnet</PageTitle>
+    <h3>Create a new Student</h3>
+}
+else
+{
+    <PageTitle>Edit @student.FirstName</PageTitle>
+    <h3>Edit @student.FirstName</h3>
+}
+
+<EditForm Model="@student" OnSubmit="HandleSubmit">
+    <div class="form-group row my-form-group">
+        <label for="firstname" class="col-sm-2 col-form-label">First Name</label>
+        <div class="col-sm-10">
+            <InputText id="firstname" @bind-Value="student.FirstName" class="form-control"></InputText>
+            <ValidationMessage For="@(() => student.FirstName)" />
+        </div>
+    </div>
+    <div class="form-group row my-form-group">
+        <label for="lastname" class="col-sm-2 col-form-label">Last Name</label>
+        <div class="col-sm-10">
+            <InputText id="lastname" @bind-Value="student.LastName" class="form-control"></InputText>
+            <ValidationMessage For="@(() => student.LastName)" />
+        </div>
+    </div>
+    <div class="form-group row my-form-group">
+        <label for="studentemail" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+            <InputText id="studentemail" @bind-Value="student.Email" class="form-control"></InputText>
+            <ValidationMessage For="@(() => student.Email)"></ValidationMessage>
+        </div>
+    </div>
+    <div class="form-group row my-form-group">
+        <label for="dateOfBirth" class="col-sm-2 col-form-label">Date of Birth:</label>
+        <div class="col-sm-10">
+            <InputDate id="dateOfBirth" @bind-Value="student.DateOfBirth" class="form-control"></InputDate>
+            <ValidationMessage For="@(() => student.DateOfBirth)" />
+
+        </div>
+    </div>
+
+    @*<div class="form-group">
+            <label for="dateOfBirth">Date of Birth:</label>
+
+            <Datepicker id="dateOfBirth1" bind-value="student.DateOfBirth" ValueChanged="@OnDateChanged"></Datepicker>
+            <ValidationMessage For="@(() => student.DateOfBirth)" />
+        </div>*@
+    <div class="form-group row my-form-group">
+        <label for="isActive" class="col-sm-2 col-form-label">Is Active:</label>
+        <div class="col-sm-10">
+            <InputCheckbox id="isActive" @bind-Value="student.IsActive" class="form-check-input"></InputCheckbox>
+            <ValidationMessage For="@(() => student.IsActive)" />
+        </div>
+    </div>
+
+    <div class="form-group row my-form-group">
+        <label for="course" class="col-sm-2 col-form-label">Course</label>
+        <div class="col-sm-10">
+            <InputSelect @bind-Value="student.CourseId" class="form-select">
+                @foreach (var course in CourseService.Courses)
+                {
+                    <option value="@course.Id">@course.Title</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    <button type="button" class="btn btn-danger" @onclick="DeleteStudent">Delete Student</button>
+</EditForm>
+@*<div>
+        <DatePicker @bind-Value="selectedDate" ValueChanged="@OnDateChanged"></DatePicker>
+    </div>*@
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    string btnText = string.Empty;
+    Student student = new Student { Course = new Course() };
+    DateTime DOB = new DateTime();
+    private DateTime selectedDate = DateTime.Today;
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = Id == null ? "Save New Student" : "Update Student";
+        await CourseService.GetCourses();
+        selectedDate = DateTime.Today;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+
+        if (Id == null)
+        {
+            student.Course = CourseService.Courses[0];
+            student.CourseId = student.Course.Id;
+            student.DateOfBirth = DateTime.Now;
+        }
+        else
+        {
+            student = await StudentService.GetStudent((int)Id);
+        }
+    }
+
+    async Task HandleSubmit()
+    {
+        //if (msgStore.HasErrors())
+        //{
+        //    return;
+        //}
+        if (Id == null)
+        {
+            await StudentService.CreateStudent(student);
+        }
+        else
+        {
+            await StudentService.UpdateStudent(student);
+        }
+    }
+
+    async Task DeleteStudent()
+    {
+        await StudentService.DeleteStudent(student.Id);
+    }
+
+}
+
